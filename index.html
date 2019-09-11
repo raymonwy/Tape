@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+
+    <body>
+        
+        <canvas id = "board" width="500 " height ="500" style ="border:1px solid black;" ></canvas>
+        <script>
+            var board = document.getElementById("board").getContext("2d");
+            board.font = "40px Times New Roman";
+            var width = 500;
+            var height = 500;
+            var enemyList = {};
+            var collision_distance = 30;
+
+                var player ={
+                text:"Y",
+                x:60,
+                spdx:30,
+                spdy:16,
+                y:70,
+                hp:10,
+                height:20,
+                width:20,
+                correction:20,
+                color:"green",
+                };
+           
+            function enemy(new_id, new_x, new_y, new_spdx, new_spdy, new_text, new_height, new_width,new_color ){
+                var player2 ={
+                text:new_text,
+                x:new_x,
+                spdx:new_spdx,
+                spdy:new_spdy,
+                y:new_y,
+                id:new_id,
+                height:new_height,
+                width:new_width,
+                color:new_color,
+                };
+                enemyList[new_id] = player2;
+            }
+            
+            function drawPlayer(unit){
+                board.save();
+                board.fillStyle = unit.color;
+                board.fillRect(unit.x-unit.width/2,unit.y-unit.height/2,unit.width,unit.height);
+                board.restore();
+            }
+
+            function drawEnemy(unit){
+                board.save();
+                board.fillStyle = unit.color;
+                board.fillRect(unit.x-unit.width/2,unit.y-unit.height/2,unit.width,unit.height);
+                board.restore();
+            }
+
+            function updatePlayer(unit){
+                    unit.x+=unit.spdx;
+                unit.y+=unit.spdy;
+                if(unit.x < 0 || unit.x > width){
+                    unit.spdx = -unit.spdx;
+                }
+                if(unit.y < 0 || unit.y > height){
+                    unit.spdy = -unit.spdy;
+                }
+            }
+
+            function playerMove(unit){
+                drawEnemy(unit);
+                updatePlayer(unit);
+            }
+            
+            function Collision(one, two){
+                // collision for points
+                /*
+                if(one != two){
+                    var x = one.x - two.x;
+                    var y = one.y - two.y;
+                    return Math.sqrt(x*x+y*y) < collision_distance;
+                }
+                */
+
+                // collision for rectangle
+                var one_x = one.x - one.width/2;
+                var one_y = one.y - one.height/2;
+                var two_x = two.x - two.width/2;
+                var two_y = two.y - two.height/2;
+                return one_x <= two_x + two.width && two_x <= one_x + one.width && one_y <= two_y + two.height && two_y <= one_y + one.height;
+            }
+
+            document.onmousemove = function(mouse){
+                player.x = mouse.clientX;
+                player.y  = mouse.clientY ;
+            }
+
+            enemy(1,60,40,30,5,"H", 25, 25, "red");
+            enemy(2,50,90,10,6,"I", 50, 10,"red");
+            setInterval(update,40);
+            var surv_time = Date.now();
+            function update(){
+                board.clearRect(0,0,width,height);
+                for( var key in enemyList){
+                    playerMove(enemyList[key]);
+                    if(Collision(player,enemyList[key])){
+                        player.hp -= 1;
+                        if(player.hp == 0){
+                            var total_time = Date.now() - surv_time;
+                            player.hp = 20;
+                        }
+                    }
+                }
+                drawPlayer(player);
+                board.fillText(player.hp, 0 , 30);
+            }
+        </script>
+
+    </body>
+
+</html>
