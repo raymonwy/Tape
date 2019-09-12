@@ -25,12 +25,12 @@
                 height:20,
                 width:20,
                 correction:20,
+                iframe_seconds:1.5,
                 color:"green",
                 };
            
-            function enemy(new_id, new_x, new_y, new_spdx, new_spdy, new_text, new_height, new_width,new_color ){
+            function enemy(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color ){
                 var player2 ={
-                text:new_text,
                 x:new_x,
                 spdx:new_spdx,
                 spdy:new_spdy,
@@ -92,28 +92,63 @@
             }
 
             document.onmousemove = function(mouse){
-                player.x = mouse.clientX;
-                player.y  = mouse.clientY ;
+            
+                var pos_x = mouse.clientX - document.getElementById('board').getBoundingClientRect().left;
+                var pos_y = mouse.clientY -  document.getElementById('board').getBoundingClientRect().top;
+
+                if(pos_x < player.width/2) {
+                    pos_x = 0 + player.width/2;
+                }
+                if(pos_x > width - player.width/2){
+                    pos_x = width - player.width/2;
+                }
+                if(pos_y< player.height/2)
+                {
+                    pos_y = 0 + player.height/2;
+                }
+                if( pos_y > height- player.height/2){
+                    pos_y = height - player.height/2;
+                }
+                player.y = pos_y;
+                player.x = pos_x;
+
             }
 
-            enemy(1,60,40,30,5,"H", 25, 25, "red");
-            enemy(2,50,90,10,6,"I", 50, 10,"red");
+            function rand_enemy(){
+                enemy(Math.random(),Math.random()*width,Math.random()*height, 5 + Math.random()* 5,5 + Math.random()* 5, 15 + Math.random() * 15,  15 + Math.random() * 15, "red");
+            } 
+            rand_enemy();
+            rand_enemy();
+            rand_enemy();
             setInterval(update,40);
-            var surv_time = Date.now();
+            var iframe = 0;
             function update(){
+                
                 board.clearRect(0,0,width,height);
                 for( var key in enemyList){
+                    
                     playerMove(enemyList[key]);
-                    if(Collision(player,enemyList[key])){
-                        player.hp -= 1;
-                        if(player.hp == 0){
-                            var total_time = Date.now() - surv_time;
-                            player.hp = 20;
+                    if(iframe == 0){
+                        if(Collision(player,enemyList[key])){
+                    
+                            player.hp -= 1;
+                            iframe = Math.floor(new Date().getTime()/1000) % 100000;
+                            if(player.hp == 0){
+                                var total_time = Date.now() - surv_time;
+                                player.hp = 20;
+                            }
                         }
                     }
+                    else if( Math.floor(new Date().getTime()/1000) % 100000 > iframe + player.iframe_seconds){
+                        iframe = 0;
+                    }
+                    
+                    
                 }
                 drawPlayer(player);
                 board.fillText(player.hp, 0 , 30);
+                board.fillText(Math.floor(new Date().getTime()/1000) % 100000 , 300 , 30);
+                board.fillText(iframe , 0 , 100);
             }
         </script>
 
