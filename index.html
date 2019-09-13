@@ -13,8 +13,9 @@
             var width = 500;
             var height = 500;
             var enemyList = {};
-            var collision_distance = 30;
-
+            var upgradeList = {};
+            var aoe_upgrade_distance = 200;
+            var heal_amount = 5;
                 var player ={
                 text:"Y",
                 x:60,
@@ -27,6 +28,7 @@
                 correction:20,
                 iframe_seconds:1.5,
                 color:"green",
+                
                 };
            
             function enemy(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color ){
@@ -42,7 +44,53 @@
                 };
                 enemyList[new_id] = player2;
             }
-            
+
+            function rand_enemy(){
+                enemy(Math.random(),Math.random()*width,Math.random()*height, 5 + Math.random()* 5,5 + Math.random()* 5, 15 + Math.random() * 15,  15 + Math.random() * 15, "red");
+            } 
+
+            function upgrade(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color,effect ){
+                var upgrade ={
+                x:new_x,
+                spdx:new_spdx,
+                spdy:new_spdy,
+                y:new_y,
+                id:new_id,
+                height:new_height,
+                width:new_width,
+                color:new_color,
+                effect,
+                };
+                upgradeList[new_id] = upgrade;
+            }
+
+            function heal_upgrade(){
+                player.hp += heal_amount;
+            }
+            function rand_upgrade(){
+                upgrade(Math.random(),Math.random()*width,Math.random()*height, 0, 0, 10, 10, "orange",heal_upgrade);
+            } 
+
+            function aoe_upgrade_effect(){
+                var aoe ={
+                    x:player.x,
+                    y:player.y,
+                    height:aoe_upgrade_distance,
+                    width:aoe_upgrade_distance,
+                }
+                for(var key in enemyList)
+                {
+                    if(Collision(enemyList[key], aoe))
+                    {
+                        delete enemyList[key];
+                    }
+                }
+            }
+
+            function aoe_upgrade(){
+                upgrade(Math.random(),Math.random()*width,Math.random()*height, 0, 0, 10, 10, "purple",aoe_upgrade_effect);
+            }
+
             function drawPlayer(unit){
                 board.save();
                 board.fillStyle = unit.color;
@@ -114,16 +162,35 @@
 
             }
 
-            function rand_enemy(){
-                enemy(Math.random(),Math.random()*width,Math.random()*height, 5 + Math.random()* 5,5 + Math.random()* 5, 15 + Math.random() * 15,  15 + Math.random() * 15, "red");
-            } 
-            rand_enemy();
-            rand_enemy();
-            rand_enemy();
+           
+            
+            function new_start(){
+                enemyList = {};
+                player.hp = 10;
+                frame_count = 0;
+                upgradeList= {};
+            }
+
             setInterval(update,40);
             var iframe = 0;
+            var frame_count = 0;
             function update(){
+                frame_count++;
+                if(frame_count % 100 == 0)
+                {
+                    rand_enemy();
+                }
+                if(frame_count % 100 == 0)
+                {
+                    rand_upgrade();
+                }
                 
+                if(frame_count % 100 == 0)
+                {
+                    aoe_upgrade();
+                    frame_count = 0;
+                }
+
                 board.clearRect(0,0,width,height);
                 for( var key in enemyList){
                     
@@ -133,17 +200,31 @@
                     
                             player.hp -= 1;
                             iframe = Math.floor(new Date().getTime()/1000) % 100000;
-                            if(player.hp == 0){
-                                var total_time = Date.now() - surv_time;
-                                player.hp = 20;
-                            }
+                           
                         }
                     }
                     else if( Math.floor(new Date().getTime()/1000) % 100000 > iframe + player.iframe_seconds){
                         iframe = 0;
                     }
+                        
                     
+                } 
+                
+                for( var key in upgradeList){
                     
+                    playerMove(upgradeList[key]);
+                    if(Collision(player,upgradeList[key])){
+                        player.effect = upgradeList[key].effect;
+                        delete upgradeList[key];
+                        player.effect();
+                        
+                       
+
+                    }
+                }
+
+                if(player.hp <= 0){
+                    new_start();
                 }
                 drawPlayer(player);
                 board.fillText(player.hp, 0 , 30);
