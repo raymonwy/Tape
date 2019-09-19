@@ -15,7 +15,7 @@
             var enemyList = {};
             var upgradeList = {};
             var bulletList = {};
-            var aoe_upgrade_distance = 200;
+            var aoe_upgrade_distance = 300;
             var heal_amount = 5;
             var player_atk_spd = 20;
             var iframe = 0;
@@ -43,7 +43,7 @@
                     updateObject: function(){
 
                         if(self.type == "player"){
-                            playerMove();
+                            self.playerMove();
                         }
                         else{
 
@@ -78,7 +78,7 @@
                 var self = object("player",60,70,30,16,20,20,"green");
                 self.iframe_seconds = 1.5;
                 self.atk_color = "green";
-                self.effect=" ";
+                self.effect="";
                 self.color="green";
             
                 self.atk_spd = player_atk_spd;
@@ -96,6 +96,33 @@
                         self.atk_counter = 0;
                         }
                 };
+
+                self.playerMove = function(){
+                    if(self.up_button)
+                    self.y  -= 7;
+                    if(self.down_button)
+                    self.y  +=7;
+                    if(self.left_button)
+                    self.x -= 7;
+                    if(self.right_button)
+                    self.x += 7;   
+
+                    if(self.x < self.width/2) {
+                        self.x = self.width/2;
+                    }
+                    if(self.x > width - self.width/2){
+                        self.x = width - self.width/2;
+                    }
+                    if(self.y< self.height/2)
+                    {
+                        self.y =  self.height/2;
+                    }
+                    if( self.y > height- self.height/2){
+                        self.y = height - self.height/2;
+                    }
+                    
+                    }
+
                 player = self;
             }
            
@@ -139,10 +166,9 @@
                 bullet(Math.random(),unit.x,unit.y, Math.cos(angle/180*Math.PI) * 6,Math.sin(angle/180*Math.PI)*6, 10,  10, unit);
             } 
 
-
             function upgrade(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color,effect ){
                 var self  = object  ("upgrade", new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color)
-                self.effect = "";
+                self.effect = effect;
                 
                 upgradeList[new_id] = self;
             }
@@ -166,6 +192,7 @@
                     height:aoe_upgrade_distance,
                     width:aoe_upgrade_distance,
                 };
+                
                 for(var key in enemyList)
                 {
                     if(Collision(enemyList[key], aoe))
@@ -173,25 +200,22 @@
                         delete enemyList[key];
                     }
                 }
+
+                for(var key in bulletList)
+                {
+                    if(bulletList[key].atker == "enemy" && Collision(bulletList[key], aoe) )
+                    {
+                        delete bulletList[key];
+                    }
+                }
+                
             }
 
             function aoe_upgrade(){
                 upgrade(Math.random(),Math.random()*width,Math.random()*height, 0, 0, 10, 10, "purple",aoe_upgrade_effect);
             }
-
-          
-            
+        
             function Collision(one, two){
-                // collision for points
-                /*
-                if(one != two){
-                    var x = one.x - two.x;
-                    var y = one.y - two.y;
-                    return Math.sqrt(x*x+y*y) < collision_distance;
-                }
-                */
-
-                // collision for rectangle
                 var one_x = one.x - one.width/2;
                 var one_y = one.y - one.height/2;
                 var two_x = two.x - two.width/2;
@@ -209,8 +233,8 @@
                 player.atk_angle = Math.atan2(pos_y,pos_x)/ Math.PI *180;
             }
 
-         document.onclick = function(mouse){
-                attack_action(player);
+            document.onclick = function(mouse){
+                player.attack_action();
             
            }
            
@@ -248,14 +272,6 @@
                     player.up_button = false;      
            }
 
-        function attack_action(unit){
-            if(unit.atk_counter >= unit.atk_spd )
-               {
-                   rand_bullet(unit.atk_angle,unit);
-                   unit.atk_counter = 0;
-               }
-        }
-
         function player_hit(unit){
             var x = 0;
             if(iframe == 0){
@@ -273,31 +289,7 @@
         return x;
 
         }
-           function playerMove(){
-                if(player.up_button)
-                player.y  -= 7;
-                if(player.down_button)
-                player.y  +=7;
-                if(player.left_button)
-                player.x -= 7;
-                if(player.right_button)
-                player.x += 7;   
-
-                if(player.x < player.width/2) {
-                    player.x = player.width/2;
-                }
-                if(player.x > width - player.width/2){
-                    player.x = width - player.width/2;
-                }
-                if(player.y< player.height/2)
-                {
-                    player.y =  player.height/2;
-                }
-                if( player.y > height- player.height/2){
-                    player.y = height - player.height/2;
-                }
-                
-           }
+        
             function new_start(){
                 enemyList = {};
                 player.hp = 10;
