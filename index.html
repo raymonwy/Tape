@@ -40,55 +40,25 @@
                         board.fillRect(self.x-self.width/2,self.y-self.height/2,self.width,self.height);
                         board.restore();
                     },
-                    updateObject: function(){
-
-                        if(self.type == "player"){
-                            self.playerMove();
-                        }
-                        else{
-
-                            self.x+=self.spdx;
-                            self.y+=self.spdy;
-                        
-                            if(self.type != "bullet" && self.type != "upgrade"){
-                                if(self.x - self.width/2 < 0 || self.x + self.width/2 > width){
-                                    self.spdx = -self.spdx;
-                                }
-                                if(self.y - self.height/2 < 0 || self.y + self.height/2 > height){
-                                    self.spdy = -self.spdy;
-                                }
-                                self.atk_counter++;
-                                self.atk_angle = Math.atan2(player.y-self.y,player.x-self.x)/ Math.PI *180;
-                                
-                                self.attack_action();
-                            }
-                        }
+                    move:function(){
+                        self.x+=self.spdx;
+                        self.y+=self.spdy;
                     },
                     update:function(){
                         self.drawObject();
-                        self.updateObject();
+                        self.move();
                     },
                 }
 
                 return self;
             }
 
-
-            function CreatePlayer(){
-                var self = object("player",60,70,30,16,20,20,"green");
-                self.iframe_seconds = 1.5;
-                self.atk_color = "green";
-                self.effect="";
-                self.color="green";
-            
+            function Atk_object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color){
+                var self = object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color);
+                self.atk_color = new_color;
                 self.atk_spd = player_atk_spd;
                 self.atk_counter = 0;
                 self.hp = 10;
-                self.down_button = false;
-                self.left_button = false;
-                self.up_button = false;
-                self.right_button = false;
-                self.atk_angle = 0;
                 self.attack_action = function(){
                     if(self.atk_counter >= self.atk_spd )
                         {
@@ -96,8 +66,20 @@
                         self.atk_counter = 0;
                         }
                 };
+                return self;
+            }
 
-                self.playerMove = function(){
+            function CreatePlayer(){
+                var self = Atk_object("player",60,70,30,16,20,20,"green");
+                self.iframe_seconds = 1.5;
+                self.effect="";
+
+                self.down_button = false;
+                self.left_button = false;
+                self.up_button = false;
+                self.right_button = false;
+        
+                self.move = function(){
                     if(self.up_button)
                     self.y  -= 7;
                     if(self.down_button)
@@ -120,18 +102,15 @@
                     if( self.y > height- self.height/2){
                         self.y = height - self.height/2;
                     }
-                    
-                    }
+                    self.atk_counter++;
+                }
 
                 player = self;
             }
            
             function enemy(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color ){
-                var self = object("enemy",new_x,new_y,new_spdx,new_spdy,new_height,new_width,new_color);
-                
-                self.atk_color = new_color;
-                self.atk_spd = enemy_atk_spd;
-                self.atk_counter = 0;
+                var self = Atk_object("enemy",new_x,new_y,new_spdx,new_spdy,new_height,new_width,new_color);
+
                 self.attack_action = function(){
                     if(self.atk_counter >= self.atk_spd )
                         {
@@ -139,8 +118,24 @@
                         self.atk_counter = 0;
                         }
                 };
+                self.move = function(){
+                        self.x+=self.spdx;
+                        self.y+=self.spdy;
+                    
+                        
+                            if(self.x - self.width/2 < 0 || self.x + self.width/2 > width){
+                                self.spdx = -self.spdx;
+                            }
+                            if(self.y - self.height/2 < 0 || self.y + self.height/2 > height){
+                                self.spdy = -self.spdy;
+                            }
+                            self.atk_counter++;
+                            self.atk_angle = Math.atan2(player.y-self.y,player.x-self.x)/ Math.PI *180;
+                            
+                            self.attack_action();
+                        
+                }
                 
-                self.atk_angle = 0;
                 enemyList[new_id] = self;
             }
             
@@ -153,8 +148,7 @@
 
             function bullet(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,unit ){
                 var self = object("bullet",new_x,new_y,new_spdx,new_spdy,new_height,new_width,unit.color);
-        
-                self.color= unit.color;
+             
                 self.atker = unit.type;
                 bulletList[new_id] = self; 
                 
@@ -169,7 +163,7 @@
             function upgrade(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color,effect ){
                 var self  = object  ("upgrade", new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color)
                 self.effect = effect;
-                
+            
                 upgradeList[new_id] = self;
             }
 
@@ -238,7 +232,7 @@
             
            }
            
-           document.oncontextmenu = function(mouse){
+            document.oncontextmenu = function(mouse){
             if(player.atk_counter > player.atk_spd*2)
             {
 
@@ -250,7 +244,7 @@
             mouse.preventDefault();
         }             
 
-           document.onkeydown = function(event){
+            document.onkeydown = function(event){
                if(event.keyCode == 68)
                     player.right_button = true;
                else if(event.keyCode == 83)
@@ -261,7 +255,7 @@
                     player.up_button = true; 
            } 
 
-           document.onkeyup = function(event){
+            document.onkeyup = function(event){
                 if(event.keyCode == 68)
                     player.right_button = false;
                else if(event.keyCode == 83)
@@ -272,23 +266,22 @@
                     player.up_button = false;      
            }
 
-        function player_hit(unit){
-            var x = 0;
-            if(iframe == 0){
-                if(Collision(player,unit)){
-                    
-                            player.hp -= 1;
-                            iframe = Math.floor(new Date().getTime()/1000) % 100000;
-                            x = 1;
+            function player_hit(unit){
+                var x = 0;
+                if(iframe == 0){
+                    if(Collision(player,unit)){
+                        
+                                player.hp -= 1;
+                                iframe = Math.floor(new Date().getTime()/1000) % 100000;
+                                x = 1;
+                            }
                         }
-                    }
-                    else if( Math.floor(new Date().getTime()/1000) % 100000 > iframe + player.iframe_seconds){
-                        iframe = 0;
-                    }
+                        else if( Math.floor(new Date().getTime()/1000) % 100000 > iframe + player.iframe_seconds){
+                            iframe = 0;
+                        }
 
-        return x;
-
-        }
+                return x;
+            }
         
             function new_start(){
                 enemyList = {};
@@ -297,8 +290,6 @@
                 upgradeList= {};
                 bulletList = {};
             }
-
-
 
             setInterval(update,30);
             CreatePlayer();
@@ -311,8 +302,7 @@
                 if(frame_count % 600 == 0)
                 {
                     rand_upgrade();
-                }
-                
+                }               
                 if(frame_count % 800 == 0)
                 {
                     aoe_upgrade();
@@ -320,8 +310,6 @@
                 }
 
                 board.clearRect(0,0,width,height);
-                
-                
 
                 for( var key in enemyList){
                     enemyList[key].update();
@@ -362,7 +350,7 @@
                     new_start();
                 }
                 player.update();
-                player.atk_counter++;
+                
                 board.fillText(player.hp, 0 , 30);
                
             }
