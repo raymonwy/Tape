@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html>
     <head>
-
+        <link rel="stylesheet" type = "text/css" href="style.css">
     </head>
 
     <body>
+        <div id = "screen_pause">
+            <div id = "pause_menu">
+                <p> Paused</p>
+                <button type ="button" onclick = "resume();new_start()"> Restart  </button>   
+                <button type ="button" onclick = "resume()"> Resume  </button>
+            </div>
+        </div>
         
         <canvas id = "board" width="500 " height ="500" style ="border:1px solid black;" ></canvas>
         <script src = "js/objects.js"></script>
         <script>
             var board = document.getElementById("board").getContext("2d");
+            var screen_pause = document.getElementById("screen_pause");
             board.font = "40px Times New Roman";
             var width = 500;
             var height = 500;
-        
+            
+            function pause(){
+                
+                document.getElementById("screen_pause").style.display = "block";
+            
+            }
+            function resume(){
+                paused = !paused; 
+                document.getElementById("screen_pause").style.display = "none";
+            }
+
             function Collision(one, two){
                 var one_x = one.x - one.width/2;
                 var one_y = one.y - one.height/2;
@@ -34,7 +52,12 @@
 
             document.onclick = function(mouse){
                 player.attack_action();
-            
+                
+                if(mouse.target == screen_pause)
+                {
+                    resume();
+                }
+                
            }
            
             document.oncontextmenu = function(mouse){
@@ -57,7 +80,10 @@
                else if (event.keyCode == 65)
                     player.left_button = true;
                 else if(event.keyCode == 87)
-                    player.up_button = true; 
+                    player.up_button = true;    
+                else if(event.keyCode == 27)
+                    resume();
+                       
            } 
 
             document.onkeyup = function(event){
@@ -99,6 +125,13 @@
             setInterval(update,30);
             CreatePlayer();
             function update(){
+                if(paused){
+                    pause();
+
+                    return;
+                }
+                    
+
                 frame_count++;
                 if(frame_count % 100 == 0)
                 {
@@ -147,6 +180,6 @@
 
     </body>
     <footer>
-        <p>  <a href="https://opengameart.org/users/buch">Art credits to buch</a>  </p>
+        <!--<p>  <a href="https://opengameart.org/users/buch">Art credits to buch</a>  </p> -->
     </footer>
 </html>

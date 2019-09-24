@@ -8,7 +8,7 @@
             var frame_count = 0;
             var player;
             var enemy_atk_spd = 50;
-
+            var paused = false;
 
             function object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id){
                 var self ={

@@ -1,0 +1,31 @@
+#screen_pause{
+    position: absolute;
+    width:500px;
+    height:500px;
+   
+    z-index:1;
+    display:none;
+    background-color: rgba(0,0,0,0.2); 
+}
+
+#pause_menu{
+    
+    position:absolute;
+    height: 150px;
+    width: 110px;
+    margin: 30% 30% 0 35%;
+    padding: 0 0 0 8%;
+    z-index: 2;
+    border: 1px solid white;
+}
+
+#board{
+    position:absolute;
+    z-index:0;
+}
+
+button{
+    margin:2%;
+    padding:5%;
+    font-size:14px;
+}
