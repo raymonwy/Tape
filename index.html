@@ -13,14 +13,14 @@
             </div>
         </div>
         
-        <canvas id = "board" width="500 " height ="500" style ="border:1px solid black;" ></canvas>
+        <canvas id = "board" width="650 " height ="650" style ="border:1px solid black;" ></canvas>
         <script src = "js/objects.js"></script>
         <script>
             var board = document.getElementById("board").getContext("2d");
             var screen_pause = document.getElementById("screen_pause");
             board.font = "40px Times New Roman";
-            var width = 500;
-            var height = 500;
+            var width = 650;
+            var height = 650;
             
             function pause(){
                 
@@ -120,6 +120,7 @@
                 frame_count = 0;
                 upgradeList= {};
                 bulletList = {};
+                wallList = {};
             }
 
             setInterval(update,30);
@@ -134,19 +135,27 @@
 
                 frame_count++;
                 if(frame_count % 100 == 0)
-                {
+                {   
+                    
                     rand_enemy();
                 }
                 if(frame_count % 600 == 0)
                 {
+
+                    rand_wall();
                     rand_upgrade();
                 }               
                 if(frame_count % 800 == 0)
                 {
                     aoe_upgrade();
-                    frame_count = 0;
+                    
                 }
 
+                if(frame_count % 1600 == 0)
+                {
+                    wallList= {};
+                    frame_count = 0;
+                }
                 board.clearRect(0,0,width,height);
 
                 for( var key in enemyList){
@@ -154,6 +163,9 @@
                     player_hit(enemyList[key]);   
                 }
 
+                for(var key in wallList){
+                    wallList[key].update();
+                }
                 for( var key in bulletList){
                     bulletList[key].update();
                 }

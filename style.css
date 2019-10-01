@@ -1,8 +1,8 @@
 #screen_pause{
     position: absolute;
-    width:500px;
-    height:500px;
-   
+    width:652px;
+    height:652px;
+    margin:0 0 0 30%;
     z-index:1;
     display:none;
     background-color: rgba(0,0,0,0.2); 
@@ -13,14 +13,16 @@
     position:absolute;
     height: 150px;
     width: 110px;
-    margin: 30% 30% 0 35%;
-    padding: 0 0 0 8%;
+    margin: 35% 35% 0 38%;
+    padding: 0 0 0% 8%;
     z-index: 2;
     border: 1px solid white;
+    background-color: white;
 }
 
 #board{
     position:absolute;
+    margin:0 0 0 30%;
     z-index:0;
 }
 
@@ -28,4 +30,8 @@ button{
     margin:2%;
     padding:5%;
     font-size:14px;
+}
+
+p{
+    margin: 25% 0% 0 10%;
 }

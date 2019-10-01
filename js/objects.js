@@ -1,7 +1,8 @@
             var enemyList = {};
             var upgradeList = {};
             var bulletList = {};
-            var aoe_upgrade_distance = 300;
+            var wallList = {};
+            var aoe_upgrade_distance = 400;
             var heal_amount = 5;
             var player_atk_spd = 20;
             var iframe = 0;
@@ -40,6 +41,43 @@
                 return self;
             }
 
+            function wall(new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id){
+                var self = object("wall",new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id);
+               
+                var super_update = self.update;
+                self.update = function(){
+                    super_update();
+                    for(var lock in bulletList){
+                        if(Collision(bulletList[lock],self))
+                        {
+                            delete bulletList[lock];
+                            break;
+                        }
+                    }
+                    for(var lock in enemyList){
+                        if(Collision(enemyList[lock],self))
+                        {
+                            enemyList[lock].spdx = -enemyList[lock].spdx;
+                            enemyList[lock].spdy = -enemyList[lock].spdy;
+                            break;
+                        }
+                    }
+                    
+                       
+                    
+
+                }
+
+                
+                wallList[new_id] = self;
+            }
+
+            function rand_wall(){
+                var unit_height = 15 + Math.random() * 30;
+                var unit_width = 15 + Math.random() * 2;
+                wall(Math.random()*(width - unit_width/2),Math.random()*(height - unit_height/2),0,0,unit_width,unit_height,"black",Math.random())
+            }
+
             function Atk_object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id){
                 var self = object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id);
                 self.atk_color = new_color;
@@ -67,14 +105,16 @@
                 self.right_button = false;
         
                 self.move = function(){
-                    if(self.up_button)
-                    self.y  -= 7;
+                    
+
+                    if(self.up_button )
+                        self.y  -= 7;
                     if(self.down_button)
-                    self.y  +=7;
+                        self.y  +=7;
                     if(self.left_button)
-                    self.x -= 7;
+                        self.x -= 7;
                     if(self.right_button)
-                    self.x += 7;   
+                        self.x += 7;   
 
                     if(self.x < self.width/2) {
                         self.x = self.width/2;
@@ -88,6 +128,27 @@
                     }
                     if( self.y > height- self.height/2){
                         self.y = height - self.height/2;
+                    }
+
+                    for(var key in wallList){
+                        if(Collision(self,wallList[key]))
+                        {
+                            var key = wallList[key];
+                            if(self.left_button && self.x > key.x)
+                            {
+                                self.x = key.x + key.width/2 + self.width/2 + 0.5;
+                            }
+                            else if(self.right_button && self.x < key.x){
+                                self.x = key.x - key.width/2 - self.width/2 - 0.5;
+                            }
+                            else if(self.down_button && self.y < key.y)
+                            {
+                                self.y = key.y- key.height/2 - self.height/2 - 0.5;
+                            }
+                            else if(self.up_button && self.y > key.y){
+                                self.y = key.y + key.height/2 + self.height/2  + 0.5 ;
+                            }
+                        }
                     }
                     self.atk_counter++;
                 }
@@ -163,7 +224,7 @@
             
             function rand_bullet(angle,unit){
                 
-                bullet(Math.random(),unit.x,unit.y, Math.cos(angle/180*Math.PI) * 6,Math.sin(angle/180*Math.PI)*6, 10,  10, unit);
+                bullet(Math.random(),unit.x,unit.y, Math.cos(angle/180*Math.PI) * 10,Math.sin(angle/180*Math.PI)*10, 10,  10, unit);
             } 
 
             function upgrade(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color,effect ){
