@@ -248,11 +248,16 @@
 
             function aoe_upgrade_effect(){
                 var aoe ={
-                    x:player.x,
-                    y:player.y,
+                    x:player.x ,
+                    y:player.y ,
                     height:aoe_upgrade_distance,
                     width:aoe_upgrade_distance,
                 };
+                
+                board.beginPath();
+                board.rect(aoe.x - aoe_upgrade_distance/2 ,aoe.y - aoe_upgrade_distance/2,aoe_upgrade_distance,aoe_upgrade_distance);
+                board.stroke();
+                board.closePath();
                 
                 for(var key in enemyList)
                 {

@@ -63,7 +63,6 @@
             document.oncontextmenu = function(mouse){
             if(player.atk_counter > player.atk_spd*2)
             {
-
                 rand_bullet(player.atk_angle -5,player);
                 rand_bullet(player.atk_angle,player);
                 rand_bullet(player.atk_angle +5,player);
@@ -136,7 +135,7 @@
                 frame_count++;
                 if(frame_count % 100 == 0)
                 {   
-                    
+                    aoe_upgrade();
                     rand_enemy();
                 }
                 if(frame_count % 600 == 0)
@@ -147,7 +146,7 @@
                 }               
                 if(frame_count % 800 == 0)
                 {
-                    aoe_upgrade();
+                    
                     
                 }
 
@@ -156,8 +155,8 @@
                     wallList= {};
                     frame_count = 0;
                 }
+               
                 board.clearRect(0,0,width,height);
-
                 for( var key in enemyList){
                     enemyList[key].update();
                     player_hit(enemyList[key]);   
@@ -169,7 +168,7 @@
                 for( var key in bulletList){
                     bulletList[key].update();
                 }
-
+                
                 for( var key in upgradeList){
                     
                     upgradeList[key].update();
