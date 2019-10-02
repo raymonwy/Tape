@@ -11,7 +11,7 @@
             var enemy_atk_spd = 50;
             var paused = false;
 
-            function object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id){
+            function object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id,new_hp){
                 var self ={
                     type:new_tpye,
                     x:new_x, 
@@ -22,6 +22,7 @@
                     width:new_width,
                     color:new_color,
                     id:new_id,
+                    hp:new_hp,
                     drawObject: function(){
                         board.save();
                         board.fillStyle = self.color;
@@ -31,6 +32,14 @@
                     move:function(){
                         self.x+=self.spdx;
                         self.y+=self.spdy;
+                    },
+                    hp_bar:function(){
+                        if(self.hp > 1){
+                            board.beginPath();
+                            board.rect(self.x - self.width/2,self.y - self.height/2 - self.width/2, self.width , 5 );
+                            board.stroke();
+                            board.closePath();
+                        }
                     },
                     update:function(){
                         self.drawObject();
@@ -78,12 +87,12 @@
                 wall(Math.random()*(width - unit_width/2),Math.random()*(height - unit_height/2),0,0,unit_width,unit_height,"black",Math.random())
             }
 
-            function Atk_object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id){
+            function Atk_object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id,new_hp){
                 var self = object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id);
                 self.atk_color = new_color;
                 self.atk_spd = player_atk_spd;
                 self.atk_counter = 0;
-                self.hp = 10;
+                self.hp = new_hp;
                 self.attack_action = function(){
                     if(self.atk_counter >= self.atk_spd )
                         {
@@ -95,7 +104,7 @@
             }
 
             function CreatePlayer(){
-                var self = Atk_object("player",60,70,30,16,20,20,"green",1);
+                var self = Atk_object("player",60,70,30,16,20,20,"green",1,10);
                 self.iframe_seconds = 1.5;
                 self.effect="";
 
@@ -107,7 +116,7 @@
                 self.effect_activate = false;
                 self.move = function(){
                     
-
+                    self.hp_bar();
                     if(self.up_button )
                         self.y  -= 7;
                     if(self.down_button)
@@ -197,7 +206,7 @@
             function rand_enemy(){
                 var unit_height = 15 + Math.random() * 15;
                 var unit_width = 15 + Math.random() * 15;
-                enemy(Math.random(),Math.random()*(width - unit_width/2),Math.random()*(height - unit_height/2), 5 + Math.random()* 5,5 + Math.random()* 5, unit_height, unit_width , "red");
+                enemy(Math.random(),Math.random()*(width - unit_width/2),Math.random()*(height - unit_height/2), 5 + Math.random()* 5,5 + Math.random()* 5, unit_height, unit_width , "red",1);
             } 
 
             function bullet(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,unit ){
