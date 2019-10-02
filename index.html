@@ -82,6 +82,8 @@
                     player.up_button = true;    
                 else if(event.keyCode == 27)
                     resume();
+                else if(event.keyCode == 81)
+                    player.effect_activate = true;
                        
            } 
 
@@ -94,6 +96,8 @@
                     player.left_button = false;
                 else if(event.keyCode == 87)
                     player.up_button = false;      
+                else if(event.keyCode == 81)
+                    player.effect_activate = false;
            }
 
             function player_hit(unit){
@@ -135,7 +139,7 @@
                 frame_count++;
                 if(frame_count % 100 == 0)
                 {   
-                    aoe_upgrade();
+                    
                     rand_enemy();
                 }
                 if(frame_count % 600 == 0)
@@ -147,7 +151,7 @@
                 if(frame_count % 800 == 0)
                 {
                     
-                    
+                    aoe_upgrade();
                 }
 
                 if(frame_count % 1600 == 0)
@@ -175,7 +179,6 @@
                     if(Collision(player,upgradeList[key])){
                         player.effect = upgradeList[key].effect;
                         delete upgradeList[key];
-                        player.effect();
                     }
                 }
 

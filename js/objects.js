@@ -103,7 +103,8 @@
                 self.left_button = false;
                 self.up_button = false;
                 self.right_button = false;
-        
+                
+                self.effect_activate = false;
                 self.move = function(){
                     
 
@@ -151,6 +152,11 @@
                         }
                     }
                     self.atk_counter++;
+
+                    if(self.effect_activate)
+                    {
+                        self.effect();
+                    }
                 }
 
                 player = self;
