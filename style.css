@@ -1,7 +1,6 @@
 #screen_pause{
     position: absolute;
-    width:652px;
-    height:652px;
+    
     margin:0 0 0 30%;
     z-index:1;
     display:none;
@@ -24,6 +23,22 @@
     position:absolute;
     margin:0 0 0 30%;
     z-index:0;
+}
+
+#hp_bar_border{
+    position:fixed;
+    bottom:0;
+    margin: 0 0 0.6% 0 ;
+    border: 1px solid black;
+    
+    left:35%;
+}
+
+#hp{
+    position:fixed;
+    
+    background-color: rgb(231, 8, 8);
+    
 }
 
 button{

@@ -12,16 +12,30 @@
                 <button type ="button" onclick = "resume()"> Resume  </button>
             </div>
         </div>
-        
-        <canvas id = "board" width="650 " height ="650" style ="border:1px solid black;" ></canvas>
+        <div id = "hp_bar_border">
+            <div id = "hp"></div>
+        </div>
+        <canvas id = "board" style ="border:1px solid black;" ></canvas>
         <script src = "js/objects.js"></script>
         <script>
-            var board = document.getElementById("board").getContext("2d");
-            var screen_pause = document.getElementById("screen_pause");
-            board.font = "40px Times New Roman";
-            var width = 650;
-            var height = 650;
+            var width = screen.height*.8;
+            var height = screen.width*.4;
             
+            
+            document.getElementById("board").width = width ;
+            document.getElementById("board").height = height ;
+            var board = document.getElementById("board").getContext("2d");
+            var screen_pause = document.getElementById("screen_pause"); 
+            document.getElementById("screen_pause").style.width = width+"px";
+            document.getElementById("screen_pause").style.height = height+"px";
+
+            document.getElementById("hp_bar_border").style.width = width*.8+"px";
+            document.getElementById("hp_bar_border").style.height = height*.05+"px";
+            document.getElementById("hp").style.height = height*.05+"px";
+            
+            board.font = "40px Times New Roman";
+            
+           
             function pause(){
                 
                 document.getElementById("screen_pause").style.display = "block";
@@ -124,6 +138,7 @@
                 upgradeList= {};
                 bulletList = {};
                 wallList = {};
+                CreatePlayer();
             }
 
             setInterval(update,30);
@@ -177,7 +192,13 @@
                     
                     upgradeList[key].update();
                     if(Collision(player,upgradeList[key])){
-                        player.effect = upgradeList[key].effect;
+                        if(upgradeList[key].holdable){
+                            player.effect = upgradeList[key].effect;
+                        }
+                        else
+                        {
+                            upgradeList[key].effect();
+                        }
                         delete upgradeList[key];
                     }
                 }
@@ -187,7 +208,7 @@
                 }
                 player.update();
                 
-                board.fillText(player.hp, 0 , 30);
+                
                
             }
         </script>

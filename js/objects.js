@@ -10,6 +10,7 @@
             var player;
             var enemy_atk_spd = 50;
             var paused = false;
+            
 
             function object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id,new_hp){
                 var self ={
@@ -34,11 +35,21 @@
                         self.y+=self.spdy;
                     },
                     hp_bar:function(){
-                        if(self.hp > 1){
+                        if(self.hp > 0){
+                            /*
+                            // hp bar on top of character
                             board.beginPath();
+                            hp border on top of character
                             board.rect(self.x - self.width/2,self.y - self.height/2 - self.width/2, self.width , 5 );
                             board.stroke();
                             board.closePath();
+                            board.save();
+                            board.fillStyle = "red";
+                            hp fill for top of character
+                            board.fillRect(self.x - self.width/2,self.y - self.height/2 - self.width/2,self.width * self.hp * 0.1,4)
+                            board.restore();
+                            */
+                           
                         }
                     },
                     update:function(){
@@ -82,9 +93,11 @@
             }
 
             function rand_wall(){
-                var unit_height = 15 + Math.random() * 30;
+                var unit_height = 45 + Math.random() * 30;
                 var unit_width = 15 + Math.random() * 2;
-                wall(Math.random()*(width - unit_width/2),Math.random()*(height - unit_height/2),0,0,unit_width,unit_height,"black",Math.random())
+                var x  =  Math.floor(Math.random()*(width - 2*unit_width - player.width )) + player.width + unit_width  ;
+                var y =  Math.floor(Math.random()*(height - player.height - 2*unit_height)) + player.height + unit_height;
+                wall(x,y,0,0,unit_width,unit_height,"black",Math.random())
             }
 
             function Atk_object(new_tpye,new_x,new_y,new_spdx,new_spdy,new_width,new_height,new_color,new_id,new_hp){
@@ -114,6 +127,9 @@
                 self.right_button = false;
                 
                 self.effect_activate = false;
+                self.hp_bar = function(){
+                    document.getElementById("hp").style.width = width*.8 * self.hp*0.1 + "px";
+                }
                 self.move = function(){
                     
                     self.hp_bar();
@@ -165,6 +181,7 @@
                     if(self.effect_activate)
                     {
                         self.effect();
+                        self.effect = "";
                     }
                 }
 
@@ -242,10 +259,10 @@
                 bullet(Math.random(),unit.x,unit.y, Math.cos(angle/180*Math.PI) * 10,Math.sin(angle/180*Math.PI)*10, 10,  10, unit);
             } 
 
-            function upgrade(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color,effect ){
+            function upgrade(new_id, new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color,effect,new_hold){
                 var self  = object  ("upgrade", new_x, new_y, new_spdx, new_spdy, new_height, new_width,new_color,new_id)
                 self.effect = effect;
-            
+                self.holdable = new_hold;
                 upgradeList[new_id] = self;
             }
 
@@ -258,7 +275,7 @@
             }
 
             function rand_upgrade(){
-                upgrade(Math.random(),Math.random()*width,Math.random()*height, 0, 0, 10, 10, "orange",atk_spd_upgrade);
+                upgrade(Math.random(),Math.random()*width,Math.random()*height, 0, 0, 10, 10, "orange",atk_spd_upgrade,false);
             } 
 
             function aoe_upgrade_effect(){
@@ -293,5 +310,5 @@
             }
 
             function aoe_upgrade(){
-                upgrade(Math.random(),Math.random()*width,Math.random()*height, 0, 0, 10, 10, "purple",aoe_upgrade_effect);
+                upgrade(Math.random(),Math.random()*width,Math.random()*height, 0, 0, 10, 10, "purple",aoe_upgrade_effect,true);
             }
